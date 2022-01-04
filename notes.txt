@@ -1,0 +1,25 @@
+Notes on FTP 'scraper' for synoptic charts
+SJP 28 Nov 2021
+host : zero
+(home theatre PC Raspberry pi 4)
+
+# Background
+I had been musing about making videos of the BOM synoptic charts  for some time.
+(I may have started this work elsewhere but here I am, proctrasinating instead of doing housework)
+It was prompted by a rude message I got yesterday while innocently opening the BOM radar. It accused me of scraping.
+It also directed me to the FTP site:
+
+
+pdf file is the one to get. It is a svg image, which can provide higher resolutio than the supplied png file.
+I have a vague memory of alredy going down this track, but not on the ftp site.
+  
+
+ used ImageMagick convert to make the pdf into a png.
+But I got an error. Apparently PDF can be hacked so this line was in 
+/etc/Imagemagick7/policy.xml
+Advice from internet was to comment it out like this:
+
+<!-- <policy domain="delegate" rights="none" pattern="gs" /> -->
+
+That worked
+
