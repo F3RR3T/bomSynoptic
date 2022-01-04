@@ -18,11 +18,11 @@ DeriveTime() {
     nowTime=$(\date -u +%H%M)     # (I have date aliased to date -R)
     echo $nowDate$nowTime
 
-    if [ $nowTime -gt 1800 ] ; then
+    if [ $nowTime -ge 1800 ] ; then
         fileTime=1800
-    elif [ $nowTime -gt 1200 ] ; then
+    elif [ $nowTime -ge 1200 ] ; then
         fileTime=1200
-    elif [ $nowTime -gt 0600 ] ; then
+    elif [ $nowTime -ge 0600 ] ; then
         fileTime=0600
     else
         fileTime=0000
