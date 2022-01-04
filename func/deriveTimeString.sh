@@ -14,9 +14,9 @@
 # This function returns the filename for the most recent chart.
 
 DeriveTime() {
-    nowDate=$(\date -u +%y%m%d)   # backslash req. to unalias date to raw format
+    nowDate=$(\date -u +%Y%m%d)   # backslash req. to unalias date to raw format
     nowTime=$(\date -u +%H%M)     # (I have date aliased to date -R)
-    echo $nowDate$nowTime
+#    echo $nowDate$nowTime
 
     if [ $nowTime -ge 1800 ] ; then
         fileTime=1800
