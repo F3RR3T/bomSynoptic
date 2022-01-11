@@ -15,7 +15,22 @@ dateTime=$(DeriveTime)
 
 latestChart=IDY00030.${dateTime}.pdf
 
+# -q no config file lookup
+# -f fail early
+# -s silent
+curl  -q -fs -o ${latestChart} ftp://ftp.bom.gov.au/anon/gen/fwo/${latestChart}
+curlExit=$?
 
-curl -o ${latestChart} ftp://ftp.bom.gov.au/anon/gen/fwo/${latestChart}
+
+if [ $curlExit -gt 0 ] ; then
+    # Did we find a file? (Maybe it has not been created yet).
+    if [ $curlExit -eq 78 ] ; then
+        echo "No file at remote site $curlExit"
+        # todo create a one-shot timer service
+    fi
+    exit $curlExit
+fi
+
+
 convert -density 300 ${latestChart} ${dateTime}.png
 
