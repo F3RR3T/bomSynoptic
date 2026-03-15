@@ -14,6 +14,7 @@ source func/deriveTimeString.sh
 dateTime=$(DeriveTime)
 
 latestChart=IDY00030.${dateTime}.pdf
+#printf "latestChart filename: %s\n" ${latestChart}
 
 # -q no config file lookup
 # -f fail early
@@ -32,5 +33,5 @@ if [ $curlExit -gt 0 ] ; then
 fi
 
 
-convert -density 300 ${latestChart} ${dateTime}.png
+magick -density 300 ${latestChart} ${dateTime}.png
 
