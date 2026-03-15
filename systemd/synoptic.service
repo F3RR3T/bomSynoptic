@@ -1,0 +1,13 @@
+[Unit]
+Description=Download and render BOM synoptic chart
+OnFailure=synoptic-retry.timer
+
+[Service]
+Type=oneshot
+User=st33v
+WorkingDirectory=/var/lib/synoptic
+ExecStart=/opt/synoptic/synopticChart.sh
+ExecStopPost=/bin/sh -c 'STATUS=SUCCESS; [ "$$EXIT_STATUS" != "0" ] && STATUS=FAILURE; logger -t synoptic -p user.err "synoptic $$STATUS exit=$$EXIT_STATUS"'
+SyslogIdentifier=synoptic
+StandardOutput=journal
+StandardError=journal

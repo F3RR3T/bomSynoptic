@@ -1,0 +1,12 @@
+[Unit]
+Description=Retry download and render BOM synoptic chart (after failure)
+
+[Service]
+Type=oneshot
+User=st33v
+WorkingDirectory=/var/lib/synoptic
+ExecStart=/opt/synoptic/synopticChart.sh
+ExecStopPost=/bin/sh -c 'STATUS=SUCCESS; [ "$$EXIT_STATUS" != "0" ] && STATUS=FAILURE; logger -t synoptic-retry -p user.err "synoptic-retry $$STATUS exit=$$EXIT_STATUS"'
+SyslogIdentifier=synoptic-retry
+StandardOutput=journal
+StandardError=journal

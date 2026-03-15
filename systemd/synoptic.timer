@@ -1,0 +1,9 @@
+[Unit]
+Description=Run synoptic chart download at 02:10, 08:10, 14:10, 20:10 UTC
+
+[Timer]
+OnCalendar=*-*-* 02,08,14,20:10:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

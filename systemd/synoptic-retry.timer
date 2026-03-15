@@ -1,0 +1,8 @@
+[Unit]
+Description=Retry synoptic chart download 15 minutes after failure
+
+[Timer]
+OnActiveSec=15min
+
+[Install]
+WantedBy=timers.target
