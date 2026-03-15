@@ -42,7 +42,7 @@ if [ "$curlExit" -gt 0 ]; then
     exit "$curlExit"
 fi
 
-magick -density 300 "${latestChart}" "${dateTime}.png"
+magick -density 300 "${latestChart}" -resize 1920x1080 "${dateTime}.png"
 
 mv "${latestChart}" "${RAW_DIR}/"
 cp "${dateTime}.png" "${ARCHIVE_DIR}/"
