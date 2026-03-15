@@ -1,0 +1,58 @@
+I have a bash script that generates a synoptic weather image. I need you to review, strengthen and extend it, then create all the deployment config files to run it on my VPS.
+Machines:
+
+Local dev machine: cr4y (Arch Linux)
+VPS: pestrel.com, user st33v, Arch Linux, SSH port 40022
+
+Project layout on cr4y:
+synopticChart.sh
+func/
+    deriveTimeString.sh
+Please read both files before doing anything else. Then:
+
+1) Review and strengthen both synopticChart.sh and func/deriveTimeString.sh. Inline the logic from deriveTimeString.sh directly into synopticChart.sh, simplifying it in the process — it was written as a separate file only for experimentation. Delete func/deriveTimeString.sh and the func/ directory. The git working tree is clean so all changes and deletions are safe. Apply bash best practices throughout (set -euo pipefail, quoting, meaningful exit codes, etc.) but do not change the core logic. Ask before any non-obvious changes.
+
+
+2) Extend synopticChart.sh to add these final steps after a successful image generation:
+
+Copy the timestamped PNG to /var/lib/synoptic/archive/
+Move/rename it to /srv/www/synopticLatest.png
+
+
+
+Web serving:
+
+nginx serves /srv/www/ as the document root for pestrel.com
+Create a static index.html in /srv/www/ whose <body> contains only <img src="/synopticLatest.png" alt="Latest synoptic">
+There is an existing nginx installation on the VPS from a previous project — write a new site config, don't assume anything about the existing config, and warn about any potential conflicts
+
+Systemd units — create four unit files:
+
+synoptic.timer — regular schedule, ask me what interval I want before creating this
+synoptic.service — oneshot, runs synopticChart.sh as user st33v, OnFailure=synoptic-retry.timer
+synoptic-retry.timer — oneshot timer, fires 15 minutes after a failure
+synoptic-retry.service — oneshot, runs the same script
+
+All services must:
+
+Set SyslogIdentifier, StandardOutput=journal, StandardError=journal
+Use ExecStopPost= to log an explicit SUCCESS or FAILURE marker (including $EXIT_STATUS) via logger, visible with journalctl -p err
+
+setup.sh — run once on pestrel to:
+
+Create /opt/synoptic/ and /opt/synoptic/func/ with correct ownership for st33v
+Create /var/lib/synoptic/archive/ owned by st33v
+Create /srv/www/ owned by st33v
+Write index.html to /srv/www/
+Install the four systemd unit files to /etc/systemd/system/
+Run systemctl daemon-reload and systemctl enable --now synoptic.timer
+Install the nginx site config and reload nginx
+Warn about any pre-existing nginx config that might conflict
+
+deploy.sh — run from cr4y to push updated scripts to pestrel:
+bashscp -P 40022 synopticChart.sh st33v@pestrel.com:/opt/synoptic/
+scp -P 40022 func/deriveTimeString.sh st33v@pestrel.com:/opt/synoptic/func/
+After copying, SSH in and restart the synoptic service to test immediately:
+bashssh -p 40022 st33v@pestrel.com "sudo systemctl restart synoptic.service"
+Report success or failure clearly.
+Ask me the desired timer schedule before generating the systemd units, and ask any other clarifying questions before generating files.
