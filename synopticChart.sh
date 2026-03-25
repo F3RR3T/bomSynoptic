@@ -5,11 +5,23 @@ set -euo pipefail
 # Download BOM synoptic chart (IDY00030) and publish as PNG.
 # BOM permits anonymous FTP for personal use.
 # Charts are valid at 00, 06, 12, 18 UTC; files appear ~2h later.
-# Deployed to /opt/synoptic/synopticChart.sh on pestrel.com.
+# Deployed to /opt/synoptic/synopticChart.sh on cremonde for pestrel.com.
 
 ARCHIVE_DIR=/var/lib/synoptic/archive
 RAW_DIR=/var/lib/synoptic/archive/raw
-LATEST=/srv/www/synopticLatest.png
+LATEST=/srv/www/pestrel/synopticLatest.png
+
+require_cmd() {
+    local cmd="$1"
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "Required command not found: ${cmd}" >&2
+        exit 127
+    fi
+}
+
+require_cmd curl
+require_cmd magick
+require_cmd gs
 
 # Return the datetime string for the most recently published chart slot.
 # BOM chart slots: 0000, 0600, 1200, 1800 UTC.

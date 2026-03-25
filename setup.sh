@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Run once on pestrel as root (or with sudo) to install the synoptic service.
+# Run once on cremonde as root (or with sudo) to install the synoptic service.
 # Usage: sudo ./setup.sh
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -11,6 +11,12 @@ fi
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 OWNER=st33v
+
+# ---------------------------------------------------------------------------
+# Packages
+# ---------------------------------------------------------------------------
+echo "==> Installing required packages..."
+pacman -Sy --needed --noconfirm curl imagemagick ghostscript nginx
 
 # ---------------------------------------------------------------------------
 # Nginx conflict checks
@@ -45,13 +51,15 @@ install -d -o "$OWNER" -g "$OWNER" /opt/synoptic
 install -d -o "$OWNER" -g "$OWNER" /var/lib/synoptic
 install -d -o "$OWNER" -g "$OWNER" /var/lib/synoptic/archive
 install -d -o "$OWNER" -g "$OWNER" /var/lib/synoptic/archive/raw
-install -d -o "$OWNER" -g "$OWNER" /srv/www
+install -d /srv/www
+install -d -o "$OWNER" -g "$OWNER" /srv/www/pestrel
+chown "$OWNER:$OWNER" /srv/www/pestrel
 
 # ---------------------------------------------------------------------------
 # Web content
 # ---------------------------------------------------------------------------
 echo "==> Writing index.html..."
-install -o "$OWNER" -g "$OWNER" -m 644 "$SCRIPT_DIR/index.html" /srv/www/index.html
+install -o "$OWNER" -g "$OWNER" -m 644 "$SCRIPT_DIR/index.html" /srv/www/pestrel/index.html
 
 # ---------------------------------------------------------------------------
 # Systemd units
@@ -69,14 +77,14 @@ systemctl enable --now synoptic.timer
 # ---------------------------------------------------------------------------
 # Nginx
 # ---------------------------------------------------------------------------
-echo "==> Installing nginx config..."
-install -m 644 "$SCRIPT_DIR/nginx/pestrel.com.conf" /etc/nginx/conf.d/synoptic.conf
+#echo "==> Installing nginx config..."
+#install -m 644 "$SCRIPT_DIR/nginx/pestrel.com.conf" /etc/nginx/conf.d/synoptic.conf
 
-echo "==> Testing nginx config..."
-nginx -t
+#echo "==> Testing nginx config..."
+#nginx -t
 
-echo "==> Reloading nginx..."
-systemctl reload nginx
+#echo "==> Reloading nginx..."
+#systemctl reload nginx
 
 # ---------------------------------------------------------------------------
 echo "==> Done."
